@@ -19,37 +19,38 @@ if (-not $steamExe) { Write-Host "Erro: Steam não encontrada."; pause; exit }
 $steamDir = [System.IO.Path]::GetDirectoryName($steamExe)
 $configDir = Join-Path $steamDir "config"
 
-# ===== BANNER (APENAS ALTERADO) =====
+# ===== BANNER GAMEON =====
 function Show-Header {
     Clear-Host
 
-    Write-Host "██████╗  █████╗  ███╗   ███╗ ███████╗ ███╗   ██╗" -ForegroundColor Cyan
-    Write-Host "██╔════╝ ██╔══██╗ ████╗ ████║ ██╔════╝ ████╗  ██║" -ForegroundColor Cyan
-    Write-Host "██║  ███╗███████║ ██╔████╔██║ █████╗   ██╔██╗ ██║" -ForegroundColor Cyan
-    Write-Host "██║   ██║██╔══██║ ██║╚██╔╝██║ ██╔══╝   ██║╚██╗██║" -ForegroundColor Cyan
-    Write-Host "╚██████╔╝██║  ██║ ██║ ╚═╝ ██║ ███████╗ ██║ ╚████║" -ForegroundColor Cyan
-    Write-Host " ╚═════╝ ╚═╝  ╚═╝ ╚═╝     ╚═╝ ╚══════╝ ╚═╝  ╚═══╝" -ForegroundColor Cyan
+    Write-Host "  ██████╗  █████╗  ███╗   ███╗ ███████╗" -ForegroundColor Cyan
+    Write-Host " ██╔════╝ ██╔══██╗ ████╗ ████║ ██╔════╝" -ForegroundColor Cyan
+    Write-Host " ██║  ███╗███████║ ██╔████╔██║ █████╗  " -ForegroundColor Cyan
+    Write-Host " ██║   ██║██╔══██║ ██║╚██╔╝██║ ██╔══╝  " -ForegroundColor Cyan
+    Write-Host " ╚██████╔╝██║  ██║ ██║ ╚═╝ ██║ ███████╗" -ForegroundColor Cyan
+    Write-Host "  ╚═════╝ ╚═╝  ╚═╝ ╚═╝     ╚═╝ ╚══════╝" -ForegroundColor Cyan
 
     Write-Host ""
     Write-Host "==================== GAMEON ====================" -ForegroundColor Green
     Write-Host ""
 }
 
-# ===== FUNÇÕES =====
+# ===== STOP STEAM =====
 function Stop-Steam {
-    Write-Host "Fechando processos da Steam..." -ForegroundColor Yellow
+    Write-Host "Fechando Steam..." -ForegroundColor Yellow
     Get-Process steam, steamwebhelper -ErrorAction SilentlyContinue | Stop-Process -Force
     Start-Sleep -Seconds 2
 }
 
+# ===== INSTALAÇÃO =====
 function Executar-Instalacao {
     param ($Modo)
 
     Show-Header
 
-    # --- DOWNLOAD DO ZIP (NÃO ALTERADO) ---
+    # ZIP (MESMO LINK)
     if (-not (Test-Path "KRAYz STORE.zip")) {
-        Write-Host "Baixando arquivos da biblioteca..." -ForegroundColor Cyan
+        Write-Host "Baixando arquivos..." -ForegroundColor Cyan
 
         $urlDoZip = "https://cdn.discordapp.com/attachments/1500928090619121826/1500928160022401084/KRAYz_STORE.zip"
 
@@ -57,7 +58,7 @@ function Executar-Instalacao {
             Invoke-WebRequest -Uri $urlDoZip -OutFile "KRAYz STORE.zip" -ErrorAction Stop
             Write-Host "Download concluído!" -ForegroundColor Green
         } catch {
-            Write-Host "ERRO: Falha ao baixar ZIP." -ForegroundColor Red
+            Write-Host "ERRO ao baixar ZIP." -ForegroundColor Red
             Pause
             return
         }
@@ -65,7 +66,7 @@ function Executar-Instalacao {
 
     Stop-Steam
 
-    # DLLs
+    # DLLs (MESMOS LINKS)
     Write-Host "Baixando DLLs..." -ForegroundColor Cyan
     $dlls = @{
         "xinput1_4.dll" = "http://update.steamox.com/update"
@@ -79,9 +80,9 @@ function Executar-Instalacao {
     }
 
     # EXTRAÇÃO
-    Write-Host "Instalando sistema..." -ForegroundColor Cyan
+    Write-Host "Instalando..." -ForegroundColor Cyan
 
-    $tmp = "$env:TEMP\krayz_store_tmp"
+    $tmp = "$env:TEMP\gameon_tmp"
     if (Test-Path $tmp) { Remove-Item $tmp -Recurse -Force }
 
     try {
@@ -89,9 +90,7 @@ function Executar-Instalacao {
 
         $limpar = @("$configDir\depotcache", "$configDir\stplug-in")
         foreach ($l in $limpar) {
-            if (Test-Path $l) {
-                Remove-Item $l -Recurse -Force -ErrorAction SilentlyContinue
-            }
+            if (Test-Path $l) { Remove-Item $l -Recurse -Force -ErrorAction SilentlyContinue }
         }
 
         Copy-Item -Path "$tmp\Config\*" -Destination "$configDir\" -Recurse -Force
@@ -106,7 +105,7 @@ function Executar-Instalacao {
             }
         }
 
-        Write-Host "`nSUCESSO: Instalação concluída!" -ForegroundColor Green
+        Write-Host "`nSUCESSO: Instalado com GAMEON!" -ForegroundColor Green
     }
     catch {
         Write-Host "ERRO na instalação." -ForegroundColor Red
@@ -116,7 +115,7 @@ function Executar-Instalacao {
 # ===== MENU =====
 Show-Header
 Write-Host "1 - Atualizar"
-Write-Host "2 - Instalação Completa"
+Write-Host "2 - Instalação Completa GAMEON"
 Write-Host "3 - Remover"
 Write-Host "4 - Sair"
 
@@ -136,6 +135,4 @@ switch ($opt) {
     default { exit }
 }
 
-Write-Host "Reiniciando Steam..." -ForegroundColor Cyan
 Start-Process $steamExe
-Start-Sleep -Seconds 2
