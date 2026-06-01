@@ -1,4 +1,4 @@
-@@ -1 +1,146 @@
+
 # ===== FIX DE CODIFICAÇÃO E AMBIENTE =====
 $OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
